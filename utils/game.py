@@ -1,6 +1,6 @@
-from ssl import HAS_ALPN
 from typing import List
 from random import Random, randint
+
 
 class Hangman():
 
@@ -15,6 +15,7 @@ class Hangman():
         self.wrongly_guessed_letters:List[str] = []
         self.turn_count:int = 0
         self.error_count:int = 0
+        self.playerEntry:chr = ""
 
         #select a randomize choice of word in the list (possible_words)
         choice:int = randint(0,len(self.possible_words)-1)
@@ -28,7 +29,7 @@ class Hangman():
         for letter in self.word_to_find:
             self.correctly_guessed_letters.append("_")
         
-        print(self.correctly_guessed_letters)
+        
 
     def play(self):
         """
@@ -37,14 +38,51 @@ class Hangman():
         guessed a letter well, add it to the well_guessed_letters list. If not, i will add it 
         to the wrongly_guessed_letters list and add 1 to error_count.
         """
-        playerEntry = input("Let's play! You're allow to enter one character : ")
 
-        #this loop will continue until there is only one characte 
-        while len(playerEntry) != 1:
-            playerEntry = input("You're only allow to enter one character")
+        firstTime = True
         
-        
+        while self.lives > 0:
+            
+            if firstTime == True:
+                #to get the choice of the user
+                self.playerEntry = input("Let's play! You're allow to enter one character : ")
 
+            #this loop will continue until there is only one characte 
+            while len(self.playerEntry) != 1:
+                self.playerEntry = input("No no no !!! You're only allow to put ONE character: ")
+                print("********" + str(len(self.playerEntry)) + "********")
+            else:
+                self.turn_count += 1
+
+                if self.playerEntry in self.word_to_find:
+                    print("''''''''''''trouvé''''''''''''''")
+                    self.showStats()
+                    result = True
+                else:
+                    print("non trouvé")
+                    self.lives -= 1
+                    self.wrongly_guessed_letters.append(self.playerEntry)
+                    self.error_count += 1
+                    self.showStats()
+                    result = False
+
+
+                if result == False:
+                    self.playerEntry = input("That's the WRONG answer!!! Try again : ")
+                else:
+                    self.playerEntry = input("That's a GOOD answer!!! Please continue: ")
+        
+            firstTime = False
+        else:
+            self.showStats()
+            self.game_over()
+    
+
+    def showStats(self):
+        print(f"self.lives : {self.lives}")
+        print(f"self.wrongly_guessed_letters : {self.wrongly_guessed_letters}")
+        print(f"playerEntry : {self.playerEntry}")
+        print(f"self.turn_count : {self.turn_count}")
 
     def start_game(self):
         """
@@ -71,3 +109,4 @@ class Hangman():
 
 
 pendu = Hangman()
+pendu.play()
