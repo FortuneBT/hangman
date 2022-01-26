@@ -1,5 +1,6 @@
 from typing import List
 from random import Random, randint
+import os
 
 
 class Hangman():
@@ -39,13 +40,13 @@ class Hangman():
         to the wrongly_guessed_letters list and add 1 to error_count.
         """
 
-        firstTime = True
+        firstTime:bool = True
         
         while self.lives > 0:
             
             if firstTime == True:
                 #to get the choice of the user
-                self.playerEntry = input("Let's play! You're allow to enter one character : ")
+                self.playerEntry = input("Let's play Hangman! Choose your first letter : ")
 
             #this loop will continue until there is only one characte 
             while len(self.playerEntry) != 1:
@@ -56,6 +57,9 @@ class Hangman():
 
                 if self.playerEntry in self.word_to_find:
                     print("''''''''''''trouvé''''''''''''''")
+                    for x in range(0,len(self.word_to_find)):
+                        if self.playerEntry == self.word_to_find[x]:              
+                            self.correctly_guessed_letters[x] = self.playerEntry
                     self.showStats()
                     result = True
                 else:
@@ -66,11 +70,17 @@ class Hangman():
                     self.showStats()
                     result = False
 
-
-                if result == False:
-                    self.playerEntry = input("That's the WRONG answer!!! Try again : ")
-                else:
-                    self.playerEntry = input("That's a GOOD answer!!! Please continue: ")
+                #check if i have already use all my lives at the last chance
+                if self.lives != 0:
+                    if result == False:
+                        self.playerEntry = input("That's the WRONG answer!!! Try again : ")
+                    else:
+                        self.playerEntry = input("That's a GOOD answer!!! Please continue: ")
+                
+                #check if it is a victory
+                if self.word_to_find == self.correctly_guessed_letters:
+                    self.well_played()
+                    break
         
             firstTime = False
         else:
@@ -81,6 +91,7 @@ class Hangman():
     def showStats(self):
         print(f"self.lives : {self.lives}")
         print(f"self.wrongly_guessed_letters : {self.wrongly_guessed_letters}")
+        print(f"self.correctly_guessed_letters : {self.correctly_guessed_letters}") 
         print(f"playerEntry : {self.playerEntry}")
         print(f"self.turn_count : {self.turn_count}")
 
@@ -105,7 +116,9 @@ class Hangman():
         """
         Method that will print the positive message when we win
         """
-        print(f"You found the word : {self.word_to_find}")
+        os.system('clear')
+        word = "".join(self.word_to_find)
+        print(f"You found the word \"{word}\" in {self.turn_count} turns with {self.error_count} errors!")
 
 
 pendu = Hangman()
