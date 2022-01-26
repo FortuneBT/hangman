@@ -115,11 +115,13 @@ class Hangman():
         will print well_guessed_letters, bad_guessed_letters, life, error_count and turn_count at 
         the end of each turn.
         """
+        self.play()
 
     def game_over(self):
         """
         method that will stop the game and print the end message
         """
+        os.system("clear")
         #this method should STOP the game too
         print("game over...")
 
@@ -132,6 +134,9 @@ class Hangman():
         print(f"{self.bcolors.OKGREEN}You found the word {self.bcolors.WARNING}\"{word}\" {self.bcolors.OKGREEN}in {self.bcolors.BOLD} {self.turn_count} {self.bcolors.ENDC} {self.bcolors.OKGREEN}turns with {self.bcolors.FAIL}{self.error_count} {self.bcolors.OKGREEN}errors!")
 
 class Bcolors():
+    """
+    a class using the color code for a code easier to read
+    """
     def __init__(self) -> None:
         
         self.NORMAL:str = "\033[0"
@@ -152,8 +157,10 @@ class Bcolors():
 
         self.multiColor:List[str] = []
 
-    def disable(self):
-        
+    def disable(self) -> None:
+        """
+        method desactivating the color in all the string
+        """
         self.NORMAL = ""
         self.BRIGHT:str = ""
 
@@ -179,5 +186,3 @@ class Bcolors():
         return self.multiColor(randint(0,len(self.multiColor)))
 
 
-pendu = Hangman()
-pendu.play()
