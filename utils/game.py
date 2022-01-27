@@ -1,5 +1,6 @@
 from typing import List
 from random import Random, randint
+from utils.color import Bcolors
 import os
 
 
@@ -23,7 +24,7 @@ class Hangman():
         #select a randomize choice of word in the list (possible_words)
         choice:int = randint(0,len(self.possible_words)-1)
 
-        #to create the variable word_to_find
+        #to create the variable word_to_find that contain the list of character of the word we want to find
         for letter in self.possible_words[choice]:
             self.word_to_find.append(letter)
 
@@ -41,70 +42,124 @@ class Hangman():
         guessed a letter well, add it to the well_guessed_letters list. If not, i will add it 
         to the wrongly_guessed_letters list and add 1 to error_count.
         """
+
         os.system("clear")
+
         firstTime:bool = True
         
+        #as long as the number of life is more thant zero, we should continue
         while self.lives > 0:
+
             os.system("clear")
+
+            #to get the first choice of the user and to have a différent message at the beginning
             if firstTime == True:
-                #to get the first choice of the user and to have a différent message at the beginning
-                print("-"*10 + "-"*len(" LET'S PLAY HANGMAN ") + "-"*10)
-                print("-"*10 + " LET'S PLAY HANGMAN " + "-"*10)
-                print("-"*10 + "-"*len(" LET'S PLAY HANGMAN ") + "-"*10)
-                print()
+
+                self.home()
+
                 print(self.correctly_guessed_letters)
+
                 self.playerEntry = input("\nChoose your first letter : ")
 
-            #this loop will continue until there is only one characte 
+                self.playerEntry = self.playerEntry.lower()
+
+            #this loop will continue until there is only one character 
             while len(self.playerEntry) != 1:
+
                 os.system("clear")
+
                 self.showStats()
-                self.playerEntry = input("No no no !!! You're only allow to put ONE character: ")
+
+                self.playerEntry = input(f"{self.bcolors.FAIL}No no no !!! {self.bcolors.ENDC}You're only allow to put {self.bcolors.FAIL}ONE{self.bcolors.ENDC} character: {self.bcolors.ENDC}")
+
+                self.playerEntry = self.playerEntry.lower()
+
             else:
+
                 self.turn_count += 1
+
                 #when we are sure there is exactly 1 character then executed the whole code below
                 if self.playerEntry in self.word_to_find:
+
                     #executed if the right letter is found
+
                     os.system("clear")
+
                     for x in range(0,len(self.word_to_find)):
-                        if self.playerEntry == self.word_to_find[x]:              
+
+                        if self.playerEntry == self.word_to_find[x]:       
+
                             self.correctly_guessed_letters[x] = self.playerEntry
+
                     self.showStats()
                     result = True
                 else:
+
                     #executed if the the letter is NOT FOUND
+
                     os.system("clear")
+
                     self.lives -= 1
                     self.wrongly_guessed_letters.append(self.playerEntry)
                     self.error_count += 1
+
                     self.showStats()
+
                     result = False
 
                 #check if it is a victory
                 if self.word_to_find == self.correctly_guessed_letters:
+
                     self.well_played()
+
                     break
 
                 #check if i have already use all my lives at the last chance
                 if self.lives != 0:
+
                     if result == False:
+
                         self.playerEntry = input(f"{self.bcolors.FAIL}That's the WRONG answer!!! Try again : {self.bcolors.WHITE}")
+
+                        self.playerEntry = self.playerEntry.lower()
+
                     else:
-                        self.playerEntry = input(f"{self.bcolors.OKGREEN}That's a GOOD answer!!! Please continue: {self.bcolors.WHITE}")
-                
+
+                        self.playerEntry = input(f"{self.bcolors.OKGREEN}That's a GOOD answer!!! Please continue: {self.bcolors.WHITE}")             
         
+                        self.playerEntry = self.playerEntry.lower()
+
             firstTime = False
+
         else:
             self.showStats()
             self.game_over()
     
 
+
     def showStats(self):
-        print(f"self.lives : {self.lives}")
-        print(f"self.wrongly_guessed_letters : {self.wrongly_guessed_letters}")
-        print(f"self.correctly_guessed_letters : {self.correctly_guessed_letters}") 
-        print(f"playerEntry : {self.playerEntry}")
-        print(f"self.turn_count : {self.turn_count}")
+        """
+        This method is necessary to show the state of the game at anymoment of the party
+        """
+
+        title:str = " LET'S PLAY HANGMAN "
+
+        sizeTitle = len(title)
+        
+        title = self.bcolors.multiColored(title)
+
+        print("-"*30 + "-"*sizeTitle + "-"*30)
+        print("-"*30 + title + "-"*30)
+        print("-"*30 + "-"*sizeTitle + "-"*30)
+
+        print()
+
+        print(f"Your lives : {self.lives}")
+        print(f"Your wrongly guessed letters : {self.wrongly_guessed_letters}")
+        print(f"Your correctly guessed letters : {self.correctly_guessed_letters}") 
+        print(f"Your turncount : {self.turn_count}")
+
+
 
     def start_game(self):
         """
@@ -117,13 +172,16 @@ class Hangman():
         """
         self.play()
 
+
+
     def game_over(self):
         """
-        method that will stop the game and print the end message
+        this method will be the last action executed at the end of the game
         """
         os.system("clear")
-        #this method should STOP the game too
-        print("game over...")
+        print(f"{self.bcolors.WARNING}game over...{self.bcolors.ENDC}")
+
+
 
     def well_played(self):
         """
@@ -131,58 +189,28 @@ class Hangman():
         """
         os.system('clear')
         word = "".join(self.word_to_find)
-        print(f"{self.bcolors.OKGREEN}You found the word {self.bcolors.WARNING}\"{word}\" {self.bcolors.OKGREEN}in {self.bcolors.BOLD} {self.turn_count} {self.bcolors.ENDC} {self.bcolors.OKGREEN}turns with {self.bcolors.FAIL}{self.error_count} {self.bcolors.OKGREEN}errors!")
+        print(f"{self.bcolors.OKGREEN}You found the word {self.bcolors.WARNING}\"{word}\" {self.bcolors.OKGREEN}in {self.bcolors.BOLD} {self.turn_count} {self.bcolors.ENDC} {self.bcolors.OKGREEN}turns with {self.bcolors.FAIL}{self.error_count} {self.bcolors.OKGREEN}errors!{self.bcolors.ENDC}")
 
-class Bcolors():
-    """
-    a class using the color code for a code easier to read
-    """
-    def __init__(self) -> None:
-        
-        self.NORMAL:str = "\033[0"
-        self.BRIGHT:str = "\033[1"
-        self.BOLD:str = '\033[1m'
-        self.UNDERLINE:str = '\033[4m'
 
-        self.OKBLUE:str = '\033[94m'
-        self.OKCYAN:str = '\033[96m'
-        self.OKGREEN:str = '\033[92m'
-        self.WARNING:str = '\033[93m'
-        self.FAIL:str = '\033[91m'
-        self.WHITE = '\033[0m'
-        
-        self.HEADER:str = '\033[95m'
-        self.ENDC:str = '\033[0m'
-        
 
-        self.multiColor:List[str] = []
-
-    def disable(self) -> None:
+    def home(self):
         """
-        method desactivating the color in all the string
+        method showing the first home page of the game
         """
-        self.NORMAL = ""
-        self.BRIGHT:str = ""
+        title:str = " LET'S PLAY HANGMAN "
 
-        self.OKBLUE:str = ""
-        self.OKCYAN:str = ""
-        self.OKGREEN:str =""
-        self.WARNING:str =""
-        self.FAIL:str = ""
-        self.WHITE = ""
+        sizeTitle = len(title)
 
-        self.ENDC:str = ""
-        self.BOLD:str = ""
-        self.HEADER:str = ""
-        self.UNDERLINE:str = ""
+        title = self.bcolors.multiColored(title)
 
-    def multiColored(self) -> str:
-        self.multiColor.append(self.OKGREEN)
-        self.multiColor.append(self.OKBLUE)
-        self.multiColor.append(self.OKCYAN)
-        self.multiColor.append(self.WARNING)
-        self.multiColor.append(self.FAIL)
-        self.multiColor.append(self.WHITE)
-        return self.multiColor(randint(0,len(self.multiColor)))
+        print("-"*30 + "-"*sizeTitle + "-"*30)
+        print("-"*30 + title + "-"*30)
+        print("-"*30 + "-"*sizeTitle + "-"*30)
+        print()
 
+        print(f"{self.bcolors.WARNING}RULES")
+        print("You have to find the word letter by letter or else the hangman is lost")
+        print("You have 5 lives in the begining and everytime you miss, you lose 1 live")
+        print("Even if you succeed, the count of the turn will be add by 1")
+        print(f"You can only choose one character every time{self.bcolors.ENDC}\n")
 
