@@ -152,37 +152,32 @@ class Hangman():
         self.victory:bool = False
         self.gameOver:bool = False
 
-        while self.lives >= 0 and self.victory == False and self.gameOver == False:
-
+        while self.lives > 0 and self.victory == False and self.gameOver == False:
+            
             #check if it is a victory
             if self.word_to_find == self.correctly_guessed_letters:
+                print("victory")
                 self.victory = True
-                """
-                print(f"self.lives : {self.lives}")
-                print(f"self.gameOver : {self.gameOver}")
-                print(f"self.victory : {self.victory}")
-                time.sleep(6)
-                """
 
                 self.well_played()
 
-
             #check if i have already use all my lives at the last chance
             elif self.lives == 0:    
-
+                print("game over")
                 self.gameOver = True
                 
-                self.game_over()
-                
+                self.game_over()  
 
+            #everything is ok, now we can keep playing
             elif self.word_to_find != self.correctly_guessed_letters or self.lives != 0:
-                
+                print("keep playing")
                 self.showStats()
-
+            
                 self.play()
 
                 self.firstTime = False
-
+        
+            
 
 
 
@@ -190,11 +185,17 @@ class Hangman():
         """
         this method will be the last action executed at the end of the game
         """
-        os.system("clear")
+        #os.system("clear")
+
         print(f"{self.bcolors.WARNING}game over...{self.bcolors.ENDC}")
+
         print()
+
         input("press Enter to continue ...")
+
         os.system("clear")
+
+        exit()
 
 
 
@@ -202,12 +203,16 @@ class Hangman():
         """
         Method that will print the positive message when we win
         """
-        os.system('clear')
+        #os.system('clear')
+
         word = "".join(self.word_to_find)
+
         print(f"{self.bcolors.OKGREEN}You found the word {self.bcolors.WARNING}\"{word}\" {self.bcolors.OKGREEN}in {self.bcolors.BOLD} {self.turn_count} {self.bcolors.ENDC} {self.bcolors.OKGREEN}turns with {self.bcolors.FAIL}{self.error_count} {self.bcolors.OKGREEN}errors!{self.bcolors.ENDC}")
 
         print()
+
         input("press Enter to continue ...")
+
         os.system("clear")
 
 
