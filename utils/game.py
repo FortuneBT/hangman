@@ -152,32 +152,31 @@ class Hangman():
         self.victory:bool = False
         self.gameOver:bool = False
 
-        while self.lives > 0 and self.victory == False and self.gameOver == False:
+        while self.lives >= 0 and self.victory == False and self.gameOver == False:
 
             #check if it is a victory
             if self.word_to_find == self.correctly_guessed_letters:
-                self.victory == True
+                self.victory = True
+                """
                 print(f"self.lives : {self.lives}")
                 print(f"self.gameOver : {self.gameOver}")
                 print(f"self.victory : {self.victory}")
                 time.sleep(6)
-                
+                """
+
                 self.well_played()
 
 
             #check if i have already use all my lives at the last chance
-            elif self.lives <= 0:    
-                self.gameOver == True
-                print(f"self.lives : {self.lives}")
-                print(f"self.gameOver : {self.gameOver}")
-                print(f"self.victory : {self.victory}")
-                time.sleep(6)
+            elif self.lives == 0:    
+
+                self.gameOver = True
                 
                 self.game_over()
                 
 
             elif self.word_to_find != self.correctly_guessed_letters or self.lives != 0:
-
+                
                 self.showStats()
 
                 self.play()
@@ -195,6 +194,7 @@ class Hangman():
         print(f"{self.bcolors.WARNING}game over...{self.bcolors.ENDC}")
         print()
         input("press Enter to continue ...")
+        os.system("clear")
 
 
 
@@ -208,6 +208,7 @@ class Hangman():
 
         print()
         input("press Enter to continue ...")
+        os.system("clear")
 
 
     def home(self):
