@@ -1,6 +1,8 @@
+from time import time
 from typing import List
 from random import Random, randint
 from utils.color import Bcolors
+import time
 import os
 
 
@@ -45,101 +47,76 @@ class Hangman():
 
         os.system("clear")
 
-        firstTime:bool = True
-        
-        #as long as the number of life is more thant zero, we should continue
-        while self.lives > 0:
+        #to get the first choice of the user and to have a différent message at the beginning
+        if self.firstTime == True:
+
+            self.home()
+
+            print(self.correctly_guessed_letters)
+
+            self.playerEntry = input("\nChoose your first letter : ")
+
+            self.playerEntry = self.playerEntry.lower()
+
+        #this loop will continue until there is only one character 
+        while len(self.playerEntry) != 1:
 
             os.system("clear")
 
-            #to get the first choice of the user and to have a différent message at the beginning
-            if firstTime == True:
+            self.showStats()
 
-                self.home()
+            self.playerEntry = input(f"{self.bcolors.FAIL}No no no !!! {self.bcolors.ENDC}You're only allow to put {self.bcolors.FAIL}ONE{self.bcolors.ENDC} character: {self.bcolors.ENDC}")
 
-                print(self.correctly_guessed_letters)
+            self.playerEntry = self.playerEntry.lower()
 
-                self.playerEntry = input("\nChoose your first letter : ")
+        else:
 
-                self.playerEntry = self.playerEntry.lower()
+            self.turn_count += 1
 
-            #this loop will continue until there is only one character 
-            while len(self.playerEntry) != 1:
+            #when we are sure there is exactly 1 character then executed the whole code below
+            if self.playerEntry in self.word_to_find:
+
+                #executed if the right letter is found
 
                 os.system("clear")
 
-                self.showStats()
+                for x in range(0,len(self.word_to_find)):
 
-                self.playerEntry = input(f"{self.bcolors.FAIL}No no no !!! {self.bcolors.ENDC}You're only allow to put {self.bcolors.FAIL}ONE{self.bcolors.ENDC} character: {self.bcolors.ENDC}")
+                    if self.playerEntry == self.word_to_find[x]:       
+
+                        self.correctly_guessed_letters[x] = self.playerEntry
+
+                self.showStats()
+                result = True
+
+                self.playerEntry = input(f"{self.bcolors.OKGREEN}That's a GOOD answer!!! Please continue: {self.bcolors.WHITE}")             
 
                 self.playerEntry = self.playerEntry.lower()
 
             else:
 
-                self.turn_count += 1
+                #executed if the the letter is NOT FOUND
 
-                #when we are sure there is exactly 1 character then executed the whole code below
-                if self.playerEntry in self.word_to_find:
+                os.system("clear")
 
-                    #executed if the right letter is found
+                self.lives -= 1
+                self.wrongly_guessed_letters.append(self.playerEntry)
+                self.error_count += 1
 
-                    os.system("clear")
+                self.showStats()
 
-                    for x in range(0,len(self.word_to_find)):
+                result = False
 
-                        if self.playerEntry == self.word_to_find[x]:       
+                self.playerEntry = input(f"{self.bcolors.FAIL}That's the WRONG answer!!! Try again : {self.bcolors.WHITE}")
 
-                            self.correctly_guessed_letters[x] = self.playerEntry
-
-                    self.showStats()
-                    result = True
-                else:
-
-                    #executed if the the letter is NOT FOUND
-
-                    os.system("clear")
-
-                    self.lives -= 1
-                    self.wrongly_guessed_letters.append(self.playerEntry)
-                    self.error_count += 1
-
-                    self.showStats()
-
-                    result = False
-
-                #check if it is a victory
-                if self.word_to_find == self.correctly_guessed_letters:
-
-                    self.well_played()
-
-                    break
-
-                #check if i have already use all my lives at the last chance
-                if self.lives != 0:
-
-                    if result == False:
-
-                        self.playerEntry = input(f"{self.bcolors.FAIL}That's the WRONG answer!!! Try again : {self.bcolors.WHITE}")
-
-                        self.playerEntry = self.playerEntry.lower()
-
-                    else:
-
-                        self.playerEntry = input(f"{self.bcolors.OKGREEN}That's a GOOD answer!!! Please continue: {self.bcolors.WHITE}")             
+                self.playerEntry = self.playerEntry.lower()
         
-                        self.playerEntry = self.playerEntry.lower()
-
-            firstTime = False
-
-        else:
-            self.showStats()
-            self.game_over()
     
 
 
     def showStats(self):
         """
-        This method is necessary to show the state of the game at anymoment of the party
+        This method is necessary to show the state of the game at any moment of the party
         """
 
         title:str = " LET'S PLAY HANGMAN "
@@ -157,7 +134,7 @@ class Hangman():
         print(f"Your lives : {self.lives}")
         print(f"Your wrongly guessed letters : {self.wrongly_guessed_letters}")
         print(f"Your correctly guessed letters : {self.correctly_guessed_letters}") 
-        print(f"Your turncount : {self.turn_count}")
+        print(f"Your turn count : {self.turn_count}")
 
 
 
@@ -170,7 +147,37 @@ class Hangman():
         will print well_guessed_letters, bad_guessed_letters, life, error_count and turn_count at 
         the end of each turn.
         """
-        self.play()
+
+        self.firstTime:bool = True
+        self.victory:bool = False
+        self.gameOver:bool = False
+
+        while self.lives > 0 and self.victory == False and self.gameOver == False:
+            
+            #check if it is a victory
+            if self.word_to_find == self.correctly_guessed_letters:
+                print("victory")
+                self.victory = True
+
+                self.well_played()
+
+            #check if i have already use all my lives at the last chance
+            elif self.lives == 0:    
+                print("game over")
+                self.gameOver = True
+                
+                self.game_over()  
+
+            #everything is ok, now we can keep playing
+            elif self.word_to_find != self.correctly_guessed_letters or self.lives != 0:
+                print("keep playing")
+                self.showStats()
+            
+                self.play()
+
+                self.firstTime = False
+        
+            
 
 
 
@@ -178,8 +185,17 @@ class Hangman():
         """
         this method will be the last action executed at the end of the game
         """
-        os.system("clear")
+        #os.system("clear")
+
         print(f"{self.bcolors.WARNING}game over...{self.bcolors.ENDC}")
+
+        print()
+
+        input("press Enter to continue ...")
+
+        os.system("clear")
+
+        exit()
 
 
 
@@ -187,10 +203,17 @@ class Hangman():
         """
         Method that will print the positive message when we win
         """
-        os.system('clear')
+        #os.system('clear')
+
         word = "".join(self.word_to_find)
+
         print(f"{self.bcolors.OKGREEN}You found the word {self.bcolors.WARNING}\"{word}\" {self.bcolors.OKGREEN}in {self.bcolors.BOLD} {self.turn_count} {self.bcolors.ENDC} {self.bcolors.OKGREEN}turns with {self.bcolors.FAIL}{self.error_count} {self.bcolors.OKGREEN}errors!{self.bcolors.ENDC}")
 
+        print()
+
+        input("press Enter to continue ...")
+
+        os.system("clear")
 
 
     def home(self):
